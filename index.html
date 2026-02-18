@@ -4,14 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>🌙 Ramadhan Mubarak Tracker + Catatan Ngaji</title>
-    <!-- Font Awesome for Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+   <!-- Font dengan nuansa Timur Tengah -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Scheherazade+New:wght@400;700&display=swap" rel="stylesheet">\
+<link rel="stylesheet" href="ramadhan-effect.css.css">
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Amiri', 'Scheherazade New', 'Times New Roman', serif;
         }
 
         body {
@@ -395,15 +398,15 @@
         }
 
         .note-content .surat {
-            color: #f39c12;
+            color: #c0c0c0;
         }
 
         .note-content .juz {
-            color: #3498db;
+            color: #b8b8b8;
         }
 
         .note-content .ayat {
-            color: #2ecc71;
+            color: #b1b1b1;
         }
 
         .note-date {
@@ -478,6 +481,67 @@
                 justify-content: center;
             }
         }
+
+.speaker-btn {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        background: rgba(20, 20, 20, 0.8);
+        backdrop-filter: blur(10px);
+        border: 2px solid black;
+        border-radius: 60px;
+        padding: 12px 20px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        z-index: 9999;
+        cursor: pointer;
+        transition: all 0.3s;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+    }
+    
+    .speaker-btn:hover {
+        transform: scale(1.1) translateY(-5px);
+        background: #2a2a2a;
+        border-color: grey;
+        box-shadow: 0 10px 30px white;
+    }
+    
+    .speaker-btn:active {
+        transform: scale(0.95);
+    }
+    
+    .speaker-icon {
+        font-size: 28px;
+        filter: drop-shadow(0 0 5px white);
+        transition: all 0.3s;
+    }
+    
+    .speaker-btn:hover .speaker-icon {
+        transform: rotate(360deg);
+        filter: drop-shadow(0 0 15px grey);
+    }
+    
+    .speaker-text {
+        color: white;
+        font-weight: bold;
+        font-size: 14px;
+        background: rgba(255,255,255,0.2);
+        padding: 5px 10px;
+        border-radius: 30px;
+        border: 1px solid black;
+    }
+    
+    @keyframes pulse {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.1); }
+        100% { transform: scale(1); }
+    }
+    
+    .playing {
+        animation: pulse 1s infinite;
+    }
+
     </style>
 </head>
 <body>
@@ -573,6 +637,19 @@
             </div>
         </div>
     </div>
+
+                <!-- ===== MUSIC PLAYER OTOMATIS ===== -->
+<audio id="myAudio" loop>
+    <!-- GANTI LINK INI DENGAN LINK MP3 KAMU -->
+    <source src="https://files.catbox.moe/k8oq12.mp3" type="audio/mpeg">
+</audio>
+
+<!-- Tombol Speaker -->
+<div class="speaker-btn" id="speakerButton">
+    <span class="speaker-icon" id="speakerIcon">🔊</span>
+    <span class="speaker-text" id="speakerStatus">Play</span>
+</div>
+
 
     <script>
         (function() {
@@ -852,7 +929,69 @@
                 }
             });
 
+    // Auto play music setelah user klik di mana saja
+    document.addEventListener('click', function initMusic() {
+        const audio = document.getElementById('bgMusic');
+        audio.volume = 0.3; // Set volume 30% biar gak kaget
+        
+        // Coba play
+        audio.play().then(() => {
+            console.log('🎵 Musik dimulai!');
+        }).catch(error => {
+            console.log('Gagal muter musik:', error);
+        });
+        
+        // Hapus event listener setelah pertama kali
+        document.removeEventListener('click', initMusic);
+    });
+    
+    // Coba autoplay langsung (mungkin diblokir browser)
+    window.addEventListener('load', function() {
+        const audio = document.getElementById('bgMusic');
+        audio.volume = 0.3;
+        
+        audio.play().catch(error => {
+            console.log('Autoplay diblokir browser. Klik di mana saja buat mulai musik.');
+        });
+    });
+
         })();
-    </script>
+
+const audio = document.getElementById('myAudio');
+    const speakerBtn = document.getElementById('speakerButton');
+    const speakerIcon = document.getElementById('speakerIcon');
+    const speakerStatus = document.getElementById('speakerStatus');
+    
+    let isPlaying = false;
+    
+    // Set volume awal
+    audio.volume = 0.3;
+    
+    speakerBtn.addEventListener('click', function() {
+        if (isPlaying) {
+            audio.pause();
+            speakerIcon.textContent = '🔇';
+            speakerStatus.textContent = 'Mute';
+            speakerBtn.style.borderColor = 'white';
+            speakerIcon.style.filter = 'drop-shadow(0 0 5px white)';
+        } else {
+            audio.play();
+            speakerIcon.textContent = '🔊';
+            speakerStatus.textContent = 'Playing';
+            speakerBtn.style.borderColor = 'white';
+            speakerIcon.style.filter = 'drop-shadow(0 0 5px white)';
+        }
+        isPlaying = !isPlaying;
+    });
+    
+    // Coba autoplay (butuh interaksi user)
+    document.addEventListener('click', function init() {
+        if (!isPlaying) {
+            audio.play().catch(() => {});
+        }
+        document.removeEventListener('click', init);
+    }, { once: true });
+
+        </script>
 </body>
 </html>
