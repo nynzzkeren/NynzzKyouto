@@ -1,0 +1,858 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🌙 Ramadhan Mubarak Tracker + Catatan Ngaji</title>
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            background: #111111;
+            background-image: radial-gradient(rgba(255, 255, 255, 0.1) 1px, transparent 1px);
+            background-size: 30px 30px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        .container {
+            position: relative;
+            z-index: 10;
+            width: 100%;
+            max-width: 1000px;
+            background: rgba(20, 20, 20, 0.85);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border: 2px solid rgba(255, 255, 255, 0.15);
+            border-radius: 48px;
+            padding: 30px 25px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(255, 255, 255, 0.1) inset;
+            animation: fadeInScale 1.2s ease;
+        }
+
+        @keyframes fadeInScale {
+            0% { opacity: 0; transform: scale(0.9); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        .header h1 {
+            font-size: 2.7rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #ffffff, #cccccc, #999999);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
+            letter-spacing: 2px;
+        }
+
+        .header p {
+            color: #aaa;
+            font-size: 1.2rem;
+            margin-top: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .header p i {
+            color: #888;
+            animation: rotateMoon 8s linear infinite;
+        }
+
+        @keyframes rotateMoon {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Slide Info */
+        .slide-info {
+            background: rgba(30, 30, 30, 0.7);
+            border-radius: 100px;
+            padding: 15px 20px;
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 15px;
+            border-left: 5px solid #888;
+            border-right: 5px solid #888;
+        }
+
+        .slide-text {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #ddd;
+            font-size: 1.2rem;
+            font-weight: 500;
+        }
+
+        .slide-text i {
+            font-size: 2rem;
+            color: #aaa;
+        }
+
+        .slide-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .slide-btn {
+            background: rgba(50, 50, 50, 0.8);
+            border: 1px solid #aaa;
+            color: white;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            font-size: 1.5rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .slide-btn:hover {
+            background: #666;
+            color: white;
+            transform: scale(1.1);
+            box-shadow: 0 0 15px #aaa;
+        }
+
+        /* Tracker Panel */
+        .tracker-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 35px;
+        }
+
+        .tracker-section {
+            background: rgba(15, 15, 15, 0.7);
+            border-radius: 40px;
+            padding: 25px 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.7);
+            transition: 0.3s;
+        }
+
+        .tracker-section:hover {
+            border-color: #888;
+            box-shadow: 0 0 25px rgba(150, 150, 150, 0.3);
+        }
+
+        .section-title {
+            font-size: 1.8rem;
+            color: #ccc;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-title i {
+            background: #444;
+            padding: 8px;
+            border-radius: 50%;
+            color: #fff;
+            font-size: 1.3rem;
+        }
+
+        .button-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            justify-content: center;
+        }
+
+        .track-btn {
+            width: 65px;
+            height: 65px;
+            border-radius: 20px;
+            background: #222;
+            border: 2px solid #444;
+            font-size: 1.4rem;
+            font-weight: bold;
+            color: #aaa;
+            cursor: pointer;
+            transition: 0.2s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 5px 0 #111;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .track-btn small {
+            font-size: 0.6rem;
+            opacity: 0.8;
+        }
+
+        .track-btn.active-puasa {
+            background: #2a2a2a;
+            border-color: #ffffff;
+            color: white;
+            box-shadow: 0 0 15px #aaa;
+            transform: translateY(-2px);
+        }
+
+        .track-btn.active-tarawih {
+            background: #333;
+            border-color: #cccccc;
+            color: white;
+            box-shadow: 0 0 15px #888;
+            transform: translateY(-2px);
+        }
+
+        .footer-stats {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 15px;
+            color: #aaa;
+        }
+
+        .badge {
+            background: #333;
+            color: #fff;
+            padding: 5px 12px;
+            border-radius: 30px;
+            font-weight: bold;
+        }
+
+        .slide-container {
+            margin-top: 15px;
+            padding: 15px;
+            background: rgba(0,0,0,0.5);
+            border-radius: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            color: #ddd;
+            font-size: 1.1rem;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .slide-bolos {
+            background: #444;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 30px;
+            font-weight: bold;
+        }
+
+        /* ===== FITUR BARU: CATATAN NGAJI ===== */
+        .ngaji-section {
+            background: rgba(15, 15, 15, 0.7);
+            border-radius: 40px;
+            padding: 25px 20px;
+            margin-top: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.7);
+        }
+
+        .ngaji-title {
+            font-size: 1.8rem;
+            color: #ccc;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .ngaji-title i {
+            background: #444;
+            padding: 8px;
+            border-radius: 50%;
+            color: #fff;
+            font-size: 1.3rem;
+        }
+
+        .input-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 20px;
+            align-items: flex-end;
+        }
+
+        .input-field {
+            flex: 1 1 180px;
+        }
+
+        .input-field label {
+            display: block;
+            color: #aaa;
+            font-size: 0.9rem;
+            margin-bottom: 5px;
+            letter-spacing: 0.5px;
+        }
+
+        .input-field input {
+            width: 100%;
+            background: #222;
+            border: 2px solid #444;
+            border-radius: 30px;
+            padding: 12px 20px;
+            color: white;
+            font-size: 1rem;
+            transition: 0.3s;
+            outline: none;
+        }
+
+        .input-field input:focus {
+            border-color: #888;
+            box-shadow: 0 0 10px rgba(255,255,255,0.2);
+        }
+
+        .input-field input::placeholder {
+            color: #666;
+            font-style: italic;
+        }
+
+        .save-btn {
+            background: #333;
+            border: 2px solid #888;
+            color: white;
+            padding: 12px 30px;
+            border-radius: 40px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            height: fit-content;
+        }
+
+        .save-btn:hover {
+            background: #444;
+            border-color: #aaa;
+            box-shadow: 0 0 15px #888;
+            transform: scale(1.02);
+        }
+
+        /* Notes List */
+        .notes-container {
+            background: #1a1a1a;
+            border-radius: 30px;
+            padding: 20px;
+            max-height: 250px;
+            overflow-y: auto;
+            border: 1px solid #333;
+        }
+
+        .note-item {
+            background: #222;
+            border-left: 5px solid #888;
+            border-radius: 20px;
+            padding: 15px 20px;
+            margin-bottom: 12px;
+            color: #ddd;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-10px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        .note-content {
+            flex: 1;
+        }
+
+        .note-content strong {
+            color: #fff;
+            font-size: 1.1rem;
+        }
+
+        .note-content .surat {
+            color: #f39c12;
+        }
+
+        .note-content .juz {
+            color: #3498db;
+        }
+
+        .note-content .ayat {
+            color: #2ecc71;
+        }
+
+        .note-date {
+            font-size: 0.8rem;
+            color: #777;
+            margin-top: 5px;
+        }
+
+        .delete-note {
+            background: #3a2a2a;
+            border: 1px solid #a55;
+            color: #faa;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .delete-note:hover {
+            background: #a55;
+            color: white;
+        }
+
+        .empty-notes {
+            color: #666;
+            text-align: center;
+            padding: 30px;
+            font-style: italic;
+        }
+
+        .reset-btn {
+            background: rgba(80, 80, 80, 0.3);
+            border: 1px solid #aaa;
+            color: #ddd;
+            padding: 12px 25px;
+            border-radius: 40px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 20px;
+        }
+
+        .reset-btn:hover {
+            background: #555;
+            color: white;
+            box-shadow: 0 0 20px #aaa;
+        }
+
+        @media (max-width: 600px) {
+            .track-btn {
+                width: 55px;
+                height: 55px;
+                font-size: 1rem;
+            }
+            .header h1 {
+                font-size: 1.8rem;
+            }
+            .input-group {
+                flex-direction: column;
+                gap: 10px;
+            }
+            .save-btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🌙 Ramadhan Mubarak 1447 H</h1>
+            <p><i class="fas fa-moon"></i> Ramadhan Tiba Ges . Web Tracker by nynzz.<i class="fas fa-star"></i></p>
+        </div>
+
+        <!-- Slide Informasi -->
+        <div class="slide-info">
+            <div class="slide-text" id="slideText">
+                <i class="fas fa-calendar-alt"></i>
+                <span id="slideMessage">📋 Puasa: penuh semangat!</span>
+            </div>
+            <div class="slide-buttons">
+                <button class="slide-btn" id="prevSlide"><i class="fas fa-chevron-left"></i></button>
+                <button class="slide-btn" id="nextSlide"><i class="fas fa-chevron-right"></i></button>
+            </div>
+        </div>
+
+        <!-- Tracker Panel -->
+        <div class="tracker-panel">
+            <!-- Bagian Puasa 1-30 -->
+            <div class="tracker-section">
+                <div class="section-title">
+                    <i class="fas fa-utensils"></i> Puasa (1 - 30)
+                </div>
+                <div class="button-grid" id="puasaGrid"></div>
+                <div class="footer-stats">
+                    <span><span id="puasaCount">0</span>/30</span>
+                    <span class="badge" id="puasaStreak">⚫ streak 0</span>
+                </div>
+            </div>
+
+            <!-- Bagian Tarawih 1-30 -->
+            <div class="tracker-section">
+                <div class="section-title">
+                    <i class="fas fa-mosque"></i> Tarawih (1 - 30)
+                </div>
+                <div class="button-grid" id="tarawihGrid"></div>
+                <div class="footer-stats">
+                    <span><span id="tarawihCount">0</span>/30</span>
+                    <span class="badge" id="tarawihStreak">⚫ streak 0</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tombol Lihat Bolong & Reset -->
+        <div style="display: flex; flex-wrap: wrap; gap: 15px; justify-content: space-between; align-items: center; margin-top: 20px;">
+            <div class="slide-container" id="slideBolosContainer">
+                <span><i class="fas fa-eye"></i> Bolong Berapa Kamu... :</span>
+                <span id="bolosPuasaDisplay" class="slide-bolos">Puasa: 0 bolos</span>
+                <span id="bolosTarawihDisplay" class="slide-bolos">Tarawih: 0 bolos</span>
+            </div>
+            <button class="reset-btn" id="resetAll"><i class="fas fa-undo-alt"></i> Reset Semua</button>
+        </div>
+
+        <!-- ===== FITUR BARU: CATATAN NGAJI ===== -->
+        <div class="ngaji-section">
+            <div class="ngaji-title">
+                <i class="fas fa-book-quran"></i> Catatan Ngaji Qur'an
+            </div>
+            
+            <!-- Form Input -->
+            <div class="input-group">
+                <div class="input-field">
+                    <label><i class="fas fa-bookmark"></i> Surat</label>
+                    <input type="text" id="suratInput" placeholder="Surat : Al-Baqarah, Yasin...">
+                </div>
+                <div class="input-field">
+                    <label><i class="fas fa-layer-group"></i> Juz</label>
+                    <input type="text" id="juzInput" placeholder="Juz : 1, 2, 3...">
+                </div>
+                <div class="input-field">
+                    <label><i class="fas fa-list"></i> Ayat</label>
+                    <input type="text" id="ayatInput" placeholder="Ayat : 1-10, 255...">
+                </div>
+                <button class="save-btn" id="saveNoteBtn">
+                    <i class="fas fa-save"></i> Save Note
+                </button>
+            </div>
+
+            <!-- Notes Display (Webnote) -->
+            <div class="notes-container" id="notesContainer">
+                <!-- Nanti diisi sama javascript -->
+                <div class="empty-notes">
+                    <i class="fas fa-book-open"></i> Belum ada catatan ngaji. Yuk catat ges
+                </div>
+            </div>
+            <div style="text-align: right; margin-top: 10px; color: #666; font-size: 0.9rem;">
+                <i class="fas fa-database"></i> Data tersimpan otomatis lek ku
+            </div>
+        </div>
+    </div>
+
+    <script>
+        (function() {
+            // ========== STATE PUASA & TARAWIH ==========
+            let puasa = new Array(30).fill(false);
+            let tarawih = new Array(30).fill(false);
+
+            // ========== STATE CATATAN NGAJI ==========
+            let ngajiNotes = [];
+
+            // ========== STATE SLIDE MESSAGE ==========
+            const slideMessages = [
+                "Puasa jangan Mokel woy 😹",
+                "Jangan lupa sahur lek ku 😋",
+                "Ngaji lek biar pahala ngalir terus 🔥",
+                "Trawih no bolong beh pemuda calon surga 🤭",
+                "JANGAN PACARAN SAAT BULAN RAMADHAN BLOKK 😡"
+            ];
+            let slideIndex = 0;
+
+            // ========== LOAD DATA DARI LOCALSTORAGE ==========
+            function loadFromStorage() {
+                // Load puasa
+                const savedPuasa = localStorage.getItem('ramadhan_puasa');
+                if (savedPuasa) {
+                    try {
+                        puasa = JSON.parse(savedPuasa);
+                    } catch (e) { console.error(e); }
+                }
+
+                // Load tarawih
+                const savedTarawih = localStorage.getItem('ramadhan_tarawih');
+                if (savedTarawih) {
+                    try {
+                        tarawih = JSON.parse(savedTarawih);
+                    } catch (e) { console.error(e); }
+                }
+
+                // Load catatan ngaji
+                const savedNotes = localStorage.getItem('ramadhan_ngaji');
+                if (savedNotes) {
+                    try {
+                        ngajiNotes = JSON.parse(savedNotes);
+                    } catch (e) { console.error(e); }
+                }
+            }
+
+            // ========== SAVE DATA KE LOCALSTORAGE ==========
+            function saveToStorage() {
+                localStorage.setItem('ramadhan_puasa', JSON.stringify(puasa));
+                localStorage.setItem('ramadhan_tarawih', JSON.stringify(tarawih));
+                localStorage.setItem('ramadhan_ngaji', JSON.stringify(ngajiNotes));
+            }
+
+            // ========== HELPER FUNCTIONS ==========
+            function countTrue(arr) {
+                return arr.filter(v => v).length;
+            }
+
+            function calculateStreak(arr) {
+                let streak = 0;
+                for (let i = 0; i < arr.length; i++) {
+                    if (arr[i]) streak++;
+                    else break;
+                }
+                return streak;
+            }
+
+            function countFalse(arr) {
+                return arr.filter(v => !v).length;
+            }
+
+            // ========== RENDER NOTES ==========
+            function renderNotes() {
+                const container = document.getElementById('notesContainer');
+                if (!container) return;
+
+                if (ngajiNotes.length === 0) {
+                    container.innerHTML = '<div class="empty-notes"><i class="fas fa-book-open"></i> Belum ada catatan ngaji. Yuk catat perkembanganmu!</div>';
+                    return;
+                }
+
+                // Urutin dari yang terbaru (index terakhir = terbaru)
+                let html = '';
+                ngajiNotes.slice().reverse().forEach((note, index) => {
+                    const originalIndex = ngajiNotes.length - 1 - index;
+                    html += `
+                        <div class="note-item">
+                            <div class="note-content">
+                                <strong><span class="surat">Surat: ${note.surat || '-'}</span> · <span class="juz"> Juz: ${note.juz || '-'}</span> · <span class="ayat"> Ayat: ${note.ayat || '-'}</span></strong>
+                                <div class="note-date"> ${note.date || ''}</div>
+                            </div>
+                            <div class="delete-note" data-index="${originalIndex}" title="Hapus catatan">
+                                <i class="fas fa-trash"></i>
+                            </div>
+                        </div>
+                    `;
+                });
+
+                container.innerHTML = html;
+
+                // Tambah event listener ke tombol delete
+                document.querySelectorAll('.delete-note').forEach(btn => {
+                    btn.addEventListener('click', function(e) {
+                        const index = this.getAttribute('data-index');
+                        if (index !== null) {
+                            deleteNote(parseInt(index));
+                        }
+                    });
+                });
+            }
+
+            // ========== TAMBAH CATATAN BARU ==========
+            function addNote(surat, juz, ayat) {
+                const now = new Date();
+                const dateStr = now.toLocaleDateString('id-ID', { 
+                    day: 'numeric', 
+                    month: 'short', 
+                    hour: '2-digit', 
+                    minute: '2-digit' 
+                });
+
+                ngajiNotes.push({
+                    surat: surat.trim() || '-',
+                    juz: juz.trim() || '-',
+                    ayat: ayat.trim() || '-',
+                    date: dateStr
+                });
+
+                saveToStorage();
+                renderNotes();
+            }
+
+            // ========== HAPUS CATATAN ==========
+            function deleteNote(index) {
+                if (index >= 0 && index < ngajiNotes.length) {
+                    ngajiNotes.splice(index, 1);
+                    saveToStorage();
+                    renderNotes();
+                }
+            }
+
+            // ========== UPDATE TAMPILAN PUASA & TARAWIH ==========
+            function updateAll() {
+                // Update tombol puasa
+                const puasaBtns = document.querySelectorAll('.track-btn[data-puasa]');
+                puasa.forEach((val, idx) => {
+                    if (puasaBtns[idx]) {
+                        if (val) {
+                            puasaBtns[idx].classList.add('active-puasa');
+                        } else {
+                            puasaBtns[idx].classList.remove('active-puasa');
+                        }
+                    }
+                });
+
+                // Update tombol tarawih
+                const tarawihBtns = document.querySelectorAll('.track-btn[data-tarawih]');
+                tarawih.forEach((val, idx) => {
+                    if (tarawihBtns[idx]) {
+                        if (val) {
+                            tarawihBtns[idx].classList.add('active-tarawih');
+                        } else {
+                            tarawihBtns[idx].classList.remove('active-tarawih');
+                        }
+                    }
+                });
+
+                // Hitung jumlah dan streak
+                const puasaCount = countTrue(puasa);
+                const tarawihCount = countTrue(tarawih);
+                const puasaStreak = calculateStreak(puasa);
+                const tarawihStreak = calculateStreak(tarawih);
+
+                document.getElementById('puasaCount').textContent = puasaCount;
+                document.getElementById('tarawihCount').textContent = tarawihCount;
+                document.getElementById('puasaStreak').innerHTML = `🔥 streak ${puasaStreak}`;
+                document.getElementById('tarawihStreak').innerHTML = `🔥 streak ${tarawihStreak}`;
+
+                // Update bolos display
+                document.getElementById('bolosPuasaDisplay').textContent = `Puasa: ${countFalse(puasa)} bolos`;
+                document.getElementById('bolosTarawihDisplay').textContent = `Tarawih: ${countFalse(tarawih)} bolos`;
+
+                saveToStorage();
+            }
+
+            // ========== GENERATE TOMBOL 1-30 ==========
+            function generateButtons() {
+                const puasaGrid = document.getElementById('puasaGrid');
+                const tarawihGrid = document.getElementById('tarawihGrid');
+                
+                puasaGrid.innerHTML = '';
+                tarawihGrid.innerHTML = '';
+
+                for (let i = 1; i <= 30; i++) {
+                    // Tombol puasa
+                    const btnPuasa = document.createElement('button');
+                    btnPuasa.className = 'track-btn';
+                    btnPuasa.setAttribute('data-puasa', i);
+                    btnPuasa.innerHTML = `${i} <small>puasa</small>`;
+                    btnPuasa.addEventListener('click', () => {
+                        puasa[i-1] = !puasa[i-1];
+                        updateAll();
+                    });
+                    puasaGrid.appendChild(btnPuasa);
+
+                    // Tombol tarawih
+                    const btnTarawih = document.createElement('button');
+                    btnTarawih.className = 'track-btn';
+                    btnTarawih.setAttribute('data-tarawih', i);
+                    btnTarawih.innerHTML = `${i} <small>tarawih</small>`;
+                    btnTarawih.addEventListener('click', () => {
+                        tarawih[i-1] = !tarawih[i-1];
+                        updateAll();
+                    });
+                    tarawihGrid.appendChild(btnTarawih);
+                }
+                updateAll();
+            }
+
+            // ========== SLIDE MESSAGE ==========
+            function updateSlideMessage() {
+                document.getElementById('slideMessage').textContent = slideMessages[slideIndex];
+            }
+
+            // ========== INIT ==========
+            loadFromStorage();
+            generateButtons();
+            renderNotes();
+            updateSlideMessage();
+
+            // ========== EVENT LISTENERS ==========
+            document.getElementById('prevSlide').addEventListener('click', () => {
+                slideIndex = (slideIndex - 1 + slideMessages.length) % slideMessages.length;
+                updateSlideMessage();
+            });
+
+            document.getElementById('nextSlide').addEventListener('click', () => {
+                slideIndex = (slideIndex + 1) % slideMessages.length;
+                updateSlideMessage();
+            });
+
+            document.getElementById('resetAll').addEventListener('click', () => {
+                if (confirm('Reset semua catatan puasa, tarawih, dan ngaji?')) {
+                    puasa = new Array(30).fill(false);
+                    tarawih = new Array(30).fill(false);
+                    ngajiNotes = [];
+                    saveToStorage();
+                    updateAll();
+                    renderNotes();
+                }
+            });
+
+            // Tombol simpan catatan ngaji
+            document.getElementById('saveNoteBtn').addEventListener('click', () => {
+                const surat = document.getElementById('suratInput').value;
+                const juz = document.getElementById('juzInput').value;
+                const ayat = document.getElementById('ayatInput').value;
+
+                if (!surat && !juz && !ayat) {
+                    alert('Isi minimal salah satu field!');
+                    return;
+                }
+
+                addNote(surat, juz, ayat);
+
+                // Kosongkan input setelah simpan
+                document.getElementById('suratInput').value = '';
+                document.getElementById('juzInput').value = '';
+                document.getElementById('ayatInput').value = '';
+            });
+
+            // Bisa juga tekan Enter di input terakhir
+            document.getElementById('ayatInput').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    document.getElementById('saveNoteBtn').click();
+                }
+            });
+
+        })();
+    </script>
+</body>
+</html>
